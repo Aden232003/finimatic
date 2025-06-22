@@ -10,6 +10,9 @@ vsl1.MP4
 # Schbang reference file
 schbang.html
 
+# Vercel
+.vercel
+
 # Node modules
 node_modules/
 
