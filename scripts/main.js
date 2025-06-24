@@ -690,7 +690,7 @@ const app = new FinimateApp();
 
 // Initialize Vimeo Player and Mute Control
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Vimeo player if available
+    // Initialize homepage Vimeo player if available
     if (typeof Vimeo !== 'undefined' && document.getElementById('vimeo-player')) {
         const iframe = document.getElementById('vimeo-player');
         const player = new Vimeo.Player(iframe);
@@ -722,6 +722,43 @@ document.addEventListener('DOMContentLoaded', function() {
         player.ready().then(function() {
             player.setVolume(0);
         });
+    }
+    
+    // Initialize SignalStack Vimeo player if available
+    if (typeof Vimeo !== 'undefined' && document.getElementById('signalstack-vimeo-player')) {
+        const iframe = document.getElementById('signalstack-vimeo-player');
+        const player = new Vimeo.Player(iframe);
+        const muteButton = document.getElementById('signalstack-mute-toggle');
+        
+        if (muteButton) {
+            const muteIcon = muteButton.querySelector('.mute-icon');
+            const unmuteIcon = muteButton.querySelector('.unmute-icon');
+            
+            let isMuted = true; // Start muted for autoplay
+            
+            // Toggle mute/unmute
+            muteButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (isMuted) {
+                    player.setVolume(1);
+                    muteIcon.style.display = 'none';
+                    unmuteIcon.style.display = 'block';
+                    isMuted = false;
+                } else {
+                    player.setVolume(0);
+                    muteIcon.style.display = 'block';
+                    unmuteIcon.style.display = 'none';
+                    isMuted = true;
+                }
+            });
+            
+            // Ensure video starts muted
+            player.ready().then(function() {
+                player.setVolume(0);
+            });
+        }
     }
 });
 
