@@ -114,10 +114,10 @@ class FinimateApp {
 
   // Navigation
   initNavigation() {
-    const nav = document.querySelector('[data-nav]');
-    const navToggle = document.querySelector('[data-nav-toggle]');
-    const navMenu = document.querySelector('[data-menu]');
-    const navLinks = document.querySelectorAll('[data-nav-link]');
+    const nav = document.querySelector('.nav');
+    const navToggle = document.querySelector('.nav-toggle');
+    const navMenu = document.querySelector('.nav-menu');
+    const navLinks = document.querySelectorAll('.nav-list a, .nav-cta .btn');
 
     // Mobile menu toggle
     if (navToggle && navMenu) {
@@ -125,6 +125,15 @@ class FinimateApp {
         navToggle.classList.toggle('active');
         navMenu.classList.toggle('active');
         document.body.classList.toggle('nav-open');
+      });
+
+      // Close menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!nav.contains(e.target) && navMenu.classList.contains('active')) {
+          navToggle.classList.remove('active');
+          navMenu.classList.remove('active');
+          document.body.classList.remove('nav-open');
+        }
       });
     }
 
@@ -143,7 +152,7 @@ class FinimateApp {
         }
 
         // Close mobile menu
-        if (navMenu.classList.contains('active')) {
+        if (navMenu && navMenu.classList.contains('active')) {
           navToggle.classList.remove('active');
           navMenu.classList.remove('active');
           document.body.classList.remove('nav-open');
@@ -156,7 +165,7 @@ class FinimateApp {
   }
 
   handleNavScroll() {
-    const nav = document.querySelector('[data-nav]');
+    const nav = document.querySelector('.nav');
     if (!nav) return;
 
     const scrollTop = window.pageYOffset;
