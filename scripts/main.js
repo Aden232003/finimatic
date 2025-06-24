@@ -665,3 +665,479 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// SignalStack Workflow Diagram Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize workflow diagram interactions
+    initWorkflowDiagram();
+    
+    // Initialize scroll animations
+    initScrollAnimations();
+});
+
+function initWorkflowDiagram() {
+    const workflowCards = document.querySelectorAll('.workflow-card');
+    const aiTools = document.querySelectorAll('.ai-tool');
+    const coreCircle = document.querySelector('.core-circle');
+    
+    // Add hover effects to workflow cards
+    workflowCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+            
+            // Add ripple effect
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 107, 53, 0.1);
+                transform: scale(0);
+                animation: ripple 0.6s ease-out;
+                pointer-events: none;
+            `;
+            
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = '50%';
+            ripple.style.top = '50%';
+            ripple.style.transform = 'translate(-50%, -50%) scale(0)';
+            
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+    
+    // Add interactive effects to AI tools
+    aiTools.forEach(tool => {
+        tool.addEventListener('mouseenter', function() {
+            // Pause core rotation temporarily
+            if (coreCircle) {
+                coreCircle.style.animationPlayState = 'paused';
+            }
+            
+            // Highlight the tool
+            this.style.zIndex = '10';
+            
+            // Add glow effect
+            const toolIcon = this.querySelector('.tool-icon');
+            if (toolIcon) {
+                toolIcon.style.boxShadow = '0 0 20px rgba(255, 107, 53, 0.6)';
+            }
+        });
+        
+        tool.addEventListener('mouseleave', function() {
+            // Resume core rotation
+            if (coreCircle) {
+                coreCircle.style.animationPlayState = 'running';
+            }
+            
+            this.style.zIndex = '1';
+            
+            // Remove glow effect
+            const toolIcon = this.querySelector('.tool-icon');
+            if (toolIcon) {
+                toolIcon.style.boxShadow = '';
+            }
+        });
+    });
+    
+    // Add click handlers for workflow cards
+    workflowCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Add click animation
+            this.style.transform = 'translateY(-4px) scale(0.98)';
+            setTimeout(() => {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            }, 100);
+            
+            // You can add more functionality here, like showing details
+            console.log('Clicked on:', this.dataset.input || this.dataset.output);
+        });
+    });
+}
+
+function initScrollAnimations() {
+    const workflowSection = document.querySelector('.signalstack-workflow-diagram');
+    
+    if (!workflowSection) return;
+    
+    // Create intersection observer for scroll animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateWorkflowElements();
+            }
+        });
+    }, observerOptions);
+    
+    observer.observe(workflowSection);
+}
+
+function animateWorkflowElements() {
+    const workflowCards = document.querySelectorAll('.workflow-card');
+    const connectors = document.querySelectorAll('.workflow-connector');
+    const aiTools = document.querySelectorAll('.ai-tool');
+    
+    // Animate workflow cards with stagger
+    workflowCards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+            
+            // Add a subtle bounce effect
+            setTimeout(() => {
+                card.style.transform = 'translateY(-4px)';
+                setTimeout(() => {
+                    card.style.transform = 'translateY(0)';
+                }, 100);
+            }, 200);
+        }, index * 100);
+    });
+    
+    // Animate connectors
+    setTimeout(() => {
+        connectors.forEach((connector, index) => {
+            setTimeout(() => {
+                const line = connector.querySelector('.connector-line');
+                const arrow = connector.querySelector('.flow-arrow');
+                
+                if (line) {
+                    line.style.animation = 'slideDown 0.8s ease-out forwards';
+                }
+                
+                if (arrow) {
+                    setTimeout(() => {
+                        arrow.style.opacity = '1';
+                        arrow.style.animation = 'arrowPulse 2s ease-in-out infinite';
+                    }, 400);
+                }
+            }, index * 200);
+        });
+    }, 600);
+    
+    // Animate AI tools in sequence
+    setTimeout(() => {
+        aiTools.forEach((tool, index) => {
+            setTimeout(() => {
+                tool.style.opacity = '1';
+                tool.style.transform = tool.style.transform + ' scale(1)';
+                
+                // Add a pop effect
+                const toolIcon = tool.querySelector('.tool-icon');
+                if (toolIcon) {
+                    toolIcon.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        toolIcon.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            }, index * 100);
+        });
+    }, 1000);
+}
+
+// Add CSS animations dynamically
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideDown {
+        from {
+            height: 0;
+            opacity: 0;
+        }
+        to {
+            height: 80px;
+            opacity: 1;
+        }
+    }
+    
+    @keyframes ripple {
+        to {
+            transform: translate(-50%, -50%) scale(4);
+            opacity: 0;
+        }
+    }
+    
+    .workflow-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .ai-tool {
+        opacity: 0;
+        transform: scale(0.8);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .workflow-connector .flow-arrow {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+        .workflow-card,
+        .ai-tool,
+        .workflow-connector .flow-arrow {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+`;
+
+document.head.appendChild(style);
+
+// Workflow Modal Functions
+function openWorkflowModal() {
+    console.log('openWorkflowModal called'); // Debug log
+    const modal = document.getElementById('workflowModal');
+    console.log('Modal element:', modal); // Debug log
+    if (modal) {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        
+        // Add escape key listener
+        document.addEventListener('keydown', handleModalKeydown);
+        
+        // Add click outside to close
+        modal.addEventListener('click', handleModalBackdropClick);
+    } else {
+        console.error('Modal element not found');
+    }
+}
+
+function closeWorkflowModal() {
+    const modal = document.getElementById('workflowModal');
+    if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = ''; // Restore scrolling
+        
+        // Remove listeners
+        document.removeEventListener('keydown', handleModalKeydown);
+        modal.removeEventListener('click', handleModalBackdropClick);
+    }
+}
+
+function handleModalKeydown(event) {
+    if (event.key === 'Escape') {
+        closeWorkflowModal();
+    }
+}
+
+function handleModalBackdropClick(event) {
+    const modal = document.getElementById('workflowModal');
+    if (event.target === modal) {
+        closeWorkflowModal();
+    }
+}
+
+// Make functions globally available
+window.openWorkflowModal = openWorkflowModal;
+window.closeWorkflowModal = closeWorkflowModal;
+
+// Universal Image Modal Functions
+function openImageModal(imageSrc, imageAlt) {
+    // Create modal if it doesn't exist
+    let modal = document.getElementById('imageModal');
+    if (!modal) {
+        modal = createImageModal();
+    }
+    
+    const modalImage = modal.querySelector('.image-modal-img');
+    modalImage.src = imageSrc;
+    modalImage.alt = imageAlt;
+    
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    
+    // Add escape key listener
+    document.addEventListener('keydown', handleImageModalKeydown);
+    
+    // Add click outside to close
+    modal.addEventListener('click', handleImageModalBackdropClick);
+}
+
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+        
+        // Remove listeners
+        document.removeEventListener('keydown', handleImageModalKeydown);
+        modal.removeEventListener('click', handleImageModalBackdropClick);
+    }
+}
+
+function createImageModal() {
+    const modal = document.createElement('div');
+    modal.id = 'imageModal';
+    modal.className = 'workflow-modal';
+    modal.innerHTML = `
+        <div class="workflow-modal-content">
+            <button class="workflow-modal-close" onclick="closeImageModal()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <img class="workflow-modal-image image-modal-img" src="" alt="">
+        </div>
+    `;
+    document.body.appendChild(modal);
+    return modal;
+}
+
+function handleImageModalKeydown(event) {
+    if (event.key === 'Escape') {
+        closeImageModal();
+    }
+}
+
+function handleImageModalBackdropClick(event) {
+    const modal = document.getElementById('imageModal');
+    if (event.target === modal) {
+        closeImageModal();
+    }
+}
+
+window.openImageModal = openImageModal;
+window.closeImageModal = closeImageModal;
+
+// Initialize workflow modal when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    const workflowCard = document.getElementById('workflowDiagramCard');
+    const modalCloseBtn = document.querySelector('.workflow-modal-close');
+    
+    if (workflowCard) {
+        workflowCard.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Workflow card clicked'); // Debug log
+            openWorkflowModal();
+        });
+        
+        // Add custom cursor effect
+        setupWorkflowCursor(workflowCard);
+    }
+    
+    if (modalCloseBtn) {
+        modalCloseBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            closeWorkflowModal();
+        });
+    }
+    
+    // Initialize all service images with click functionality
+    initializeServiceImages();
+});
+
+// Custom cursor for workflow card
+function setupWorkflowCursor(workflowCard) {
+    let cursorBlip = null;
+    
+    workflowCard.addEventListener('mouseenter', function() {
+        // Create cursor blip
+        cursorBlip = document.createElement('div');
+        cursorBlip.className = 'workflow-cursor-blip';
+        cursorBlip.textContent = 'Click Here';
+        document.body.appendChild(cursorBlip);
+        
+        // Hide default cursor elements
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        if (cursorDot) cursorDot.style.opacity = '0';
+        if (cursorOutline) cursorOutline.style.opacity = '0';
+    });
+    
+    workflowCard.addEventListener('mousemove', function(e) {
+        if (cursorBlip) {
+            cursorBlip.style.left = e.clientX + 15 + 'px';
+            cursorBlip.style.top = e.clientY - 10 + 'px';
+        }
+    });
+    
+    workflowCard.addEventListener('mouseleave', function() {
+        if (cursorBlip) {
+            cursorBlip.remove();
+            cursorBlip = null;
+        }
+        
+        // Restore default cursor elements
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        if (cursorDot) cursorDot.style.opacity = '1';
+        if (cursorOutline) cursorOutline.style.opacity = '1';
+    });
+}
+
+// Initialize all service images with click and cursor effects
+function initializeServiceImages() {
+    // Find all clickable images in service pages
+    const serviceImages = document.querySelectorAll(
+        '.integration-diagram, .workflow-diagram-image, .service-image, img'
+    );
+    
+    serviceImages.forEach(image => {
+        // Skip video elements and buttons
+        if (image.closest('video, button, .video-container, .nav, .footer')) return;
+        
+        // Add cursor effect and click handler
+        setupImageCursor(image);
+        
+        image.addEventListener('click', function(e) {
+            e.preventDefault();
+            openImageModal(image.src, image.alt || 'Service Image');
+        });
+        
+        // Add hover effect
+        image.style.cursor = 'pointer';
+    });
+}
+
+// Custom cursor for service images
+function setupImageCursor(imageElement) {
+    let cursorBlip = null;
+    
+    imageElement.addEventListener('mouseenter', function() {
+        // Create cursor blip
+        cursorBlip = document.createElement('div');
+        cursorBlip.className = 'workflow-cursor-blip';
+        cursorBlip.textContent = 'View Full Size';
+        document.body.appendChild(cursorBlip);
+        
+        // Hide default cursor elements
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        if (cursorDot) cursorDot.style.opacity = '0';
+        if (cursorOutline) cursorOutline.style.opacity = '0';
+    });
+    
+    imageElement.addEventListener('mousemove', function(e) {
+        if (cursorBlip) {
+            cursorBlip.style.left = e.clientX + 15 + 'px';
+            cursorBlip.style.top = e.clientY - 10 + 'px';
+        }
+    });
+    
+    imageElement.addEventListener('mouseleave', function() {
+        if (cursorBlip) {
+            cursorBlip.remove();
+            cursorBlip = null;
+        }
+        
+        // Restore default cursor elements
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        if (cursorDot) cursorDot.style.opacity = '1';
+        if (cursorOutline) cursorOutline.style.opacity = '1';
+    });
+}

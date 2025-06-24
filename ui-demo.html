@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Kit Demo - Finimatic</title>
+    
+    <!-- Your existing styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    
+    <!-- UI Kit styles (Tailwind-based) -->
+    <link rel="stylesheet" href="styles/ui-components.css">
+</head>
+<body class="body">
+    
+    <!-- Your existing header -->
+    <header style="padding: 2rem; background: var(--color-bg-secondary); margin-bottom: 2rem;">
+        <h1 style="font-size: 2rem; color: var(--color-text-primary);">UI Kit Demo</h1>
+        <p style="color: var(--color-text-secondary);">Demonstrating Tailwind UI components alongside existing Finimatic styles</p>
+    </header>
+
+    <!-- UI Kit Section -->
+    <main class="ui-kit" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+        
+        <section style="margin-bottom: 3rem;">
+            <h2 class="tw-text-2xl tw-font-bold tw-mb-6 tw-text-foreground">UI Kit Components</h2>
+            
+            <!-- Button Examples -->
+            <div class="tw-space-y-4 tw-mb-8">
+                <h3 class="tw-text-lg tw-font-semibold tw-text-foreground">Buttons</h3>
+                <div class="tw-flex tw-gap-4 tw-flex-wrap">
+                    <button class="ui-button ui-button-primary tw-px-4 tw-py-2">Primary Button</button>
+                    <button class="ui-button ui-button-secondary tw-px-4 tw-py-2">Secondary Button</button>
+                    <button class="ui-button tw-border tw-border-primary tw-bg-transparent tw-text-primary hover:tw-bg-primary hover:tw-text-primary-foreground tw-px-4 tw-py-2">Outline Button</button>
+                    <button class="ui-button hover:tw-bg-accent hover:tw-text-accent-foreground tw-px-4 tw-py-2">Ghost Button</button>
+                </div>
+            </div>
+            
+            <!-- Card Examples -->
+            <div class="tw-space-y-4 tw-mb-8">
+                <h3 class="tw-text-lg tw-font-semibold tw-text-foreground">Cards</h3>
+                <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-6">
+                    
+                    <div class="ui-card tw-p-6">
+                        <div class="tw-mb-4">
+                            <h3 class="tw-text-lg tw-font-semibold tw-leading-none tw-tracking-tight">Service Card</h3>
+                        </div>
+                        <div class="tw-text-sm tw-text-muted-foreground tw-mb-4">
+                            This is a sample service card built with UI kit components.
+                        </div>
+                        <div class="tw-mt-4 tw-pt-4 tw-border-t">
+                            <button class="ui-button ui-button-primary tw-px-3 tw-py-1 tw-text-sm">Learn More</button>
+                        </div>
+                    </div>
+                    
+                    <div class="ui-card tw-p-6">
+                        <div class="tw-mb-4">
+                            <h3 class="tw-text-lg tw-font-semibold tw-leading-none tw-tracking-tight">Feature Card</h3>
+                        </div>
+                        <div class="tw-text-sm tw-text-muted-foreground tw-mb-4">
+                            Another example of UI kit styling with consistent design system.
+                        </div>
+                        <div class="tw-mt-4 tw-pt-4 tw-border-t">
+                            <button class="ui-button ui-button-secondary tw-px-3 tw-py-1 tw-text-sm">Explore</button>
+                        </div>
+                    </div>
+                    
+                    <div class="ui-card tw-p-6">
+                        <div class="tw-mb-4">
+                            <h3 class="tw-text-lg tw-font-semibold tw-leading-none tw-tracking-tight">Interactive Card</h3>
+                        </div>
+                        <div class="tw-text-sm tw-text-muted-foreground tw-mb-4">
+                            Cards can have hover effects and interactive elements.
+                        </div>
+                        <div class="tw-mt-4 tw-pt-4 tw-border-t">
+                            <button class="ui-button tw-border tw-border-primary tw-bg-transparent tw-text-primary hover:tw-bg-primary hover:tw-text-primary-foreground tw-px-3 tw-py-1 tw-text-sm">Get Started</button>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!-- Input Examples -->
+            <div class="tw-space-y-4 tw-mb-8">
+                <h3 class="tw-text-lg tw-font-semibold tw-text-foreground">Form Elements</h3>
+                <div class="tw-max-w-md tw-space-y-4">
+                    <input type="text" class="ui-input" placeholder="Enter your email...">
+                    <input type="password" class="ui-input" placeholder="Password">
+                    <textarea class="ui-input tw-min-h-20 tw-resize-none" placeholder="Your message..."></textarea>
+                </div>
+            </div>
+            
+        </section>
+        
+        <!-- Mixed Section - UI Kit + Existing Styles -->
+        <section style="margin-bottom: 3rem;">
+            <h2 style="font-size: 1.5rem; color: var(--color-text-primary); margin-bottom: 1.5rem;">Mixed Styling Example</h2>
+            <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">
+                This section demonstrates how UI kit components work alongside your existing Finimatic styles.
+            </p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                
+                <!-- Existing Finimatic Card Style -->
+                <div style="background: var(--color-bg-secondary); border: 1px solid var(--color-border-light); border-radius: var(--space-4); padding: var(--space-6); transition: all var(--transition-base);">
+                    <h3 style="color: var(--color-text-primary); margin-bottom: 1rem;">Existing Style</h3>
+                    <p style="color: var(--color-text-secondary); margin-bottom: 1.5rem;">This uses your current CSS custom properties and styling system.</p>
+                    <button class="btn btn--primary magnetic" data-magnetic>
+                        <span class="btn-text">Existing Button</span>
+                        <div class="btn-bg"></div>
+                    </button>
+                </div>
+                
+                <!-- UI Kit Card Style -->
+                <div class="ui-card tw-p-6">
+                    <h3 class="tw-text-lg tw-font-semibold tw-text-card-foreground tw-mb-4">UI Kit Style</h3>
+                    <p class="tw-text-muted-foreground tw-mb-6">This uses the new Tailwind-based UI kit components.</p>
+                    <button class="ui-button ui-button-primary tw-px-4 tw-py-2">UI Kit Button</button>
+                </div>
+                
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- Your existing scripts -->
+    <script type="module">
+        // Demo: Creating components programmatically
+        import { createButton } from './components/ui/button.js';
+        import { createCard } from './components/ui/card.js';
+        
+        // Add a programmatically created component
+        const dynamicSection = document.createElement('section');
+        dynamicSection.className = 'ui-kit';
+        dynamicSection.style.cssText = 'max-width: 1200px; margin: 2rem auto; padding: 0 2rem;';
+        
+        const title = document.createElement('h2');
+        title.className = 'tw-text-2xl tw-font-bold tw-mb-6 tw-text-foreground';
+        title.textContent = 'Programmatically Created Components';
+        
+        const container = document.createElement('div');
+        container.className = 'tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6';
+        
+        // Create components using the JavaScript functions
+        const dynamicCard = createCard({
+            title: 'Dynamic Card',
+            content: 'This card was created using JavaScript and the UI kit functions.',
+            className: 'tw-border-primary',
+            onClick: () => alert('Dynamic card clicked!')
+        });
+        
+        const dynamicButton = createButton({
+            text: 'Dynamic Button',
+            variant: 'outline',
+            size: 'lg',
+            onClick: () => alert('Dynamic button clicked!')
+        });
+        
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'tw-flex tw-justify-center tw-mt-4';
+        buttonContainer.appendChild(dynamicButton);
+        
+        container.appendChild(dynamicCard);
+        
+        dynamicSection.appendChild(title);
+        dynamicSection.appendChild(container);
+        dynamicSection.appendChild(buttonContainer);
+        
+        document.body.appendChild(dynamicSection);
+    </script>
+    
+</body>
+</html> 
