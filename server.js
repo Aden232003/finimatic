@@ -16,10 +16,10 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      scriptSrc: ["'self'", "https://player.vimeo.com"],
-      frameSrc: ["'self'", "https://player.vimeo.com"],
+      scriptSrc: ["'self'", "https://player.vimeo.com", "https://uenunwzw.formester.com"],
+      frameSrc: ["'self'", "https://player.vimeo.com", "https://uenunwzw.formester.com"],
       imgSrc: ["'self'", "data:", "https:", "https://i.vimeocdn.com"],
-      connectSrc: ["'self'", "https://player.vimeo.com"]
+      connectSrc: ["'self'", "https://player.vimeo.com", "https://uenunwzw.formester.com"]
     }
   }
 }));

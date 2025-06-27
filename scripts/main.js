@@ -16,6 +16,9 @@ class FinimateApp {
     this.initParallax();
     this.initSolutionsNavigation();
     this.initWorkFilters();
+    this.initHowItWorksSection();
+    this.initProvenResultsSection();
+    this.initFAQSection();
     
     // Initialize after DOM is loaded
     if (document.readyState === 'loading') {
@@ -141,15 +144,19 @@ class FinimateApp {
     // Smooth scroll for navigation links
     navLinks.forEach(link => {
       link.addEventListener('click', (e) => {
-        e.preventDefault();
         const targetId = link.getAttribute('href');
-        const targetElement = document.querySelector(targetId);
         
-        if (targetElement) {
-          targetElement.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
+        // Only handle hash links (internal anchors), let external links work normally
+        if (targetId && targetId.startsWith('#')) {
+          e.preventDefault();
+          const targetElement = document.querySelector(targetId);
+          
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
         }
 
         // Close mobile menu
@@ -499,40 +506,28 @@ class FinimateApp {
     if (solutionColumns.length === 0) return;
 
     solutionColumns.forEach((column, idx) => {
+      // Hover to activate
       column.addEventListener('mouseenter', () => {
         solutionColumns.forEach(col => col.classList.remove('active'));
         column.classList.add('active');
-        // Fix for end cards: use a timeout to ensure layout is ready before scroll
-        if (idx === 0) {
-          setTimeout(() => {
-            column.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
-          }, 10);
-        } else if (idx === solutionColumns.length - 1) {
-          setTimeout(() => {
-            column.scrollIntoView({ behavior: 'smooth', inline: 'end', block: 'nearest' });
-          }, 10);
-        } else {
-          column.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      });
+      
+      // Don't remove active state on mouseleave - keep it active until another is hovered
+      
+      // Make entire card clickable to open respective page
+      column.addEventListener('click', (e) => {
+        // Don't trigger if clicking on the CTA button directly
+        if (e.target.classList.contains('solution-cta')) return;
+        
+        // Find the CTA link and navigate to it
+        const ctaLink = column.querySelector('.solution-cta');
+        if (ctaLink && ctaLink.href) {
+          window.location.href = ctaLink.href;
         }
       });
-      column.addEventListener('mouseleave', () => {
-        column.classList.remove('active');
-      });
-      column.addEventListener('click', () => {
-        solutionColumns.forEach(col => col.classList.remove('active'));
-        column.classList.add('active');
-        if (idx === 0) {
-          setTimeout(() => {
-            column.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
-          }, 10);
-        } else if (idx === solutionColumns.length - 1) {
-          setTimeout(() => {
-            column.scrollIntoView({ behavior: 'smooth', inline: 'end', block: 'nearest' });
-          }, 10);
-        } else {
-          column.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-        }
-      });
+      
+      // Add cursor pointer for clickable cards
+      column.style.cursor = 'pointer';
     });
 
     // Observe solutions section for scroll animations
@@ -683,6 +678,234 @@ class FinimateApp {
       if (callNow) func.apply(context, args);
     };
   }
+
+  // Proven Results Section Functionality
+  initProvenResultsSection() {
+    const provenResultsSection = document.querySelector('.proven-results-section');
+    if (!provenResultsSection) return;
+
+    this.setupProvenResultsObserver();
+  }
+
+  setupProvenResultsObserver() {
+    const observerOptions = {
+      threshold: 0.3,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    this.provenResultsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          this.animateProvenResultsSection();
+          // Unobserve after animation starts to prevent re-triggering
+          this.provenResultsObserver.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    const provenResultsSection = document.querySelector('.proven-results-section');
+    if (provenResultsSection) {
+      this.provenResultsObserver.observe(provenResultsSection);
+    }
+  }
+
+  animateProvenResultsSection() {
+    // Animate fade-up elements
+    const fadeUpElements = document.querySelectorAll('.proven-results-section [data-fade-up]');
+    fadeUpElements.forEach(element => {
+      element.classList.add('animate');
+    });
+
+    // Start counter animations after a brief delay
+    setTimeout(() => {
+      this.animateCounters();
+    }, 400);
+  }
+
+  animateCounters() {
+    const counters = document.querySelectorAll('.proven-results-section .counter');
+    
+    counters.forEach(counter => {
+      const target = parseInt(counter.getAttribute('data-counter'));
+      const duration = 2000; // 2 seconds
+      const startTime = performance.now();
+      
+      const updateCounter = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Use easeOutQuart easing for smooth deceleration
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        const currentValue = Math.floor(easeOutQuart * target);
+        
+        counter.textContent = this.formatNumber(currentValue);
+        
+        if (progress < 1) {
+          requestAnimationFrame(updateCounter);
+        } else {
+          // Ensure final value is correct
+          counter.textContent = this.formatNumber(target);
+        }
+      };
+      
+      requestAnimationFrame(updateCounter);
+    });
+  }
+
+  formatNumber(num) {
+    // Add commas to large numbers for better readability
+    return num.toLocaleString();
+  }
+
+  // FAQ Section Functionality
+  initFAQSection() {
+    const faqItems = document.querySelectorAll('.faq-item');
+    if (!faqItems.length) return;
+
+    faqItems.forEach(item => {
+      const question = item.querySelector('.faq-question');
+      
+      question.addEventListener('click', () => {
+        const isActive = item.classList.contains('active');
+        
+        // Close all other FAQ items
+        faqItems.forEach(otherItem => {
+          if (otherItem !== item) {
+            otherItem.classList.remove('active');
+          }
+        });
+        
+        // Toggle current item
+        if (isActive) {
+          item.classList.remove('active');
+        } else {
+          item.classList.add('active');
+        }
+      });
+    });
+  }
+
+  // How It Works Section Functionality
+  initHowItWorksSection() {
+    const howItWorksSection = document.querySelector('.how-it-works-animated');
+    if (!howItWorksSection) return;
+
+    this.workflowCards = document.querySelectorAll('.workflow-card');
+    this.cardFlipTimeouts = [];
+    
+    // Setup intersection observer for the section
+    this.setupHowItWorksObserver();
+    
+    // Setup hover interactions
+    this.setupWorkflowCardInteractions();
+  }
+
+  setupHowItWorksObserver() {
+    const observerOptions = {
+      threshold: 0.3,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    this.howItWorksObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          this.animateWorkflowCards();
+        }
+      });
+    }, observerOptions);
+
+    const howItWorksSection = document.querySelector('.how-it-works-animated');
+    if (howItWorksSection) {
+      this.howItWorksObserver.observe(howItWorksSection);
+    }
+  }
+
+  animateWorkflowCards() {
+    this.workflowCards.forEach((card, index) => {
+      // Animate cards in with staggered delay (slower)
+      setTimeout(() => {
+        card.classList.add('animate-in');
+      }, index * 300); // Slower stagger for initial animation
+    });
+    
+    // Wait for all cards to animate in, then flip them all together
+    const totalAnimationTime = (this.workflowCards.length - 1) * 300 + 1500;
+    setTimeout(() => {
+      // Mark all as auto-flipped first
+      this.workflowCards.forEach(card => {
+        card.classList.add('auto-flipped');
+      });
+      
+      // Then flip all to text simultaneously
+      this.currentState = 'text';
+      this.flipAllCards(true);
+    }, totalAnimationTime);
+  }
+
+  setupWorkflowCardInteractions() {
+    const cardsContainer = document.querySelector('.workflow-cards-container');
+    if (!cardsContainer) return;
+
+    // Hover on the entire cards container area
+    cardsContainer.addEventListener('mouseenter', () => {
+      if (!this.allCardsAnimated()) return;
+      
+      this.flipAllCards(false); // Flip to show animations
+    });
+
+    cardsContainer.addEventListener('mouseleave', () => {
+      if (!this.allCardsAnimated()) return;
+      
+      this.flipAllCards(true); // Flip back to show text
+    });
+
+    // Individual card hover effects (just visual, no flipping)
+    this.workflowCards.forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        if (!card.classList.contains('animate-in')) return;
+        card.style.transform = 'translateY(-5px) scale(1.02)';
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+  }
+
+  allCardsAnimated() {
+    return Array.from(this.workflowCards).every(card => 
+      card.classList.contains('auto-flipped')
+    );
+  }
+
+  flipAllCards(showText) {
+    const cardsContainer = document.querySelector('.workflow-cards-container');
+    
+    // Add sync class for coordinated animation
+    cardsContainer.classList.add('force-sync');
+    
+    // Force synchronization - remove all flip classes first
+    this.workflowCards.forEach(card => {
+      card.classList.remove('flipped');
+    });
+    
+    // Apply new state immediately for synchronized flip
+    if (showText) {
+      // Use requestAnimationFrame to ensure DOM update
+      requestAnimationFrame(() => {
+        this.workflowCards.forEach(card => {
+          card.classList.add('flipped');
+        });
+      });
+    }
+    
+    // Remove sync class after animation completes
+    setTimeout(() => {
+      cardsContainer.classList.remove('force-sync');
+    }, 700);
+  }
+
+
 }
 
 // Initialize the application
