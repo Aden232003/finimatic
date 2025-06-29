@@ -983,7 +983,136 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
+
+    // Service Pages Vimeo Players
+    const servicePages = [
+        { playerId: 'contentops-vimeo-player', buttonId: 'muteBtn' },
+        { playerId: 'toolfoundry-vimeo-player', buttonId: 'muteBtn' },
+        { playerId: 'relatrix-vimeo-player', buttonId: 'muteBtn' },
+        { playerId: 'leadlogic-vimeo-player', buttonId: 'muteBtn' }
+    ];
+
+    servicePages.forEach(({ playerId, buttonId }) => {
+        if (typeof Vimeo !== 'undefined' && document.getElementById(playerId)) {
+            const iframe = document.getElementById(playerId);
+            const player = new Vimeo.Player(iframe);
+            const muteButton = document.getElementById(buttonId);
+            
+            if (muteButton) {
+                const muteIcon = muteButton.querySelector('.mute-icon');
+                const unmuteIcon = muteButton.querySelector('.unmute-icon');
+                
+                let isMuted = true; // Start muted for autoplay
+                
+                // Toggle mute/unmute
+                muteButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (isMuted) {
+                        player.setVolume(1);
+                        muteIcon.style.display = 'none';
+                        unmuteIcon.style.display = 'block';
+                        isMuted = false;
+                    } else {
+                        player.setVolume(0);
+                        muteIcon.style.display = 'block';
+                        unmuteIcon.style.display = 'none';
+                        isMuted = true;
+                    }
+                });
+                
+                // Ensure video starts muted
+                player.ready().then(function() {
+                    player.setVolume(0);
+                });
+            }
+        }
+    });
 });
+
+// YouTube API for Sample Work Videos
+let youtubePlayers = {};
+let youtubeAPIReady = false;
+
+// This function creates YouTube players when the API is ready
+function onYouTubeIframeAPIReady() {
+    console.log('YouTube API Ready');
+    youtubeAPIReady = true;
+    const videoIds = ['youtube-1', 'youtube-2', 'youtube-3', 'youtube-4', 'youtube-5', 'youtube-6', 'youtube-7', 'youtube-longform-1', 'youtube-longform-2', 'youtube-longform-3', 'youtube-longform-4', 'youtube-longform-5', 'youtube-longform-6', 'youtube-longform-7', 'youtube-longform-8', 'youtube-longform-9'];
+    
+    videoIds.forEach(id => {
+        const iframe = document.getElementById(id);
+        if (iframe) {
+            console.log('Initializing player:', id);
+            youtubePlayers[id] = new YT.Player(id, {
+                events: {
+                    'onReady': function(event) {
+                        console.log('Player ready:', id);
+                        // Start muted
+                        event.target.mute();
+                        setupMuteButton(id);
+                    },
+                    'onError': function(event) {
+                        console.error('YouTube player error:', event.data);
+                    }
+                }
+            });
+        }
+    });
+}
+
+// Setup individual mute button
+function setupMuteButton(videoId) {
+    const button = document.querySelector(`[data-video="${videoId}"]`);
+    if (!button) return;
+    
+    const muteIcon = button.querySelector('.mute-icon');
+    const unmuteIcon = button.querySelector('.unmute-icon');
+    
+    // Remove any existing listeners
+    button.replaceWith(button.cloneNode(true));
+    const newButton = document.querySelector(`[data-video="${videoId}"]`);
+    const newMuteIcon = newButton.querySelector('.mute-icon');
+    const newUnmuteIcon = newButton.querySelector('.unmute-icon');
+    
+    newButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('Mute button clicked for:', videoId);
+        const player = youtubePlayers[videoId];
+        
+        if (player && typeof player.isMuted === 'function') {
+            try {
+                if (player.isMuted()) {
+                    console.log('Unmuting video:', videoId);
+                    player.unMute();
+                    player.setVolume(100);
+                    newMuteIcon.style.display = 'none';
+                    newUnmuteIcon.style.display = 'block';
+                } else {
+                    console.log('Muting video:', videoId);
+                    player.mute();
+                    newMuteIcon.style.display = 'block';
+                    newUnmuteIcon.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error toggling mute:', error);
+            }
+        } else {
+            console.error('Player not ready or methods not available:', videoId);
+        }
+    });
+}
+
+// Ensure API is loaded
+if (typeof YT !== 'undefined' && YT.Player) {
+    onYouTubeIframeAPIReady();
+} else {
+    // Wait for API to load
+    window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+}
 
 // SignalStack Workflow Diagram Functionality
 document.addEventListener('DOMContentLoaded', function() {
@@ -1460,3 +1589,257 @@ function setupImageCursor(imageElement) {
         if (cursorOutline) cursorOutline.style.opacity = '1';
     });
 }
+
+// Case Study Toggle Functionality
+function toggleCaseStudy(caseId) {
+    console.log('Toggling case study:', caseId); // Debug log
+    
+    const caseElement = document.getElementById(caseId);
+    const bannerElement = caseElement ? caseElement.previousElementSibling : null;
+    
+    if (!caseElement) {
+        console.error('Case element not found:', caseId);
+        return;
+    }
+    
+    if (!bannerElement) {
+        console.error('Banner element not found for:', caseId);
+        return;
+    }
+    
+    const isCurrentlyOpen = caseElement.classList.contains('show');
+    
+    // Close all other case studies first
+    const allCaseDetails = document.querySelectorAll('.case-study-details');
+    const allBanners = document.querySelectorAll('.case-study-banner');
+    
+    allCaseDetails.forEach(detail => {
+        detail.classList.remove('show');
+    });
+    
+    allBanners.forEach(banner => {
+        banner.classList.remove('active');
+    });
+    
+    // If the clicked case study wasn't open, open it
+    if (!isCurrentlyOpen) {
+        bannerElement.classList.add('active');
+        
+        // Add show class with a slight delay for smooth animation
+        setTimeout(() => {
+            caseElement.classList.add('show');
+            console.log('Case study opened:', caseId);
+        }, 50);
+        
+        // Smooth scroll to the expanded section
+        setTimeout(() => {
+            const rect = caseElement.getBoundingClientRect();
+            const elementTop = rect.top + window.pageYOffset;
+            const offsetPosition = elementTop - 100; // Account for fixed navbar
+            
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        }, 300);
+    } else {
+        console.log('Case study was already open, closing it');
+    }
+}
+
+// Smooth scroll function for navigation
+function scrollToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+}
+
+// Initialize creators carousel scroll behavior
+function initCreatorsCarousel() {
+    const scrollContainer = document.querySelector('.creators-scroll-container');
+    const grid = document.querySelector('.creators-grid');
+    
+    if (!scrollContainer || !grid) return;
+    
+    // Prevent infinite scroll by ensuring scroll stops at last card
+    scrollContainer.addEventListener('scroll', function() {
+        const maxScroll = grid.scrollWidth - scrollContainer.clientWidth;
+        
+        if (scrollContainer.scrollLeft >= maxScroll - 10) {
+            scrollContainer.scrollLeft = maxScroll;
+        }
+        
+        if (scrollContainer.scrollLeft <= 10) {
+            scrollContainer.scrollLeft = 0;
+        }
+    });
+}
+
+// Initialize text reveal effects for mobile touch
+function initTextReveal() {
+    const textRevealCard = document.querySelector('.text-reveal-card');
+    
+    if (!textRevealCard) return;
+    
+    // Add touch support for mobile
+    textRevealCard.addEventListener('touchstart', function() {
+        this.classList.add('touched');
+    });
+    
+    textRevealCard.addEventListener('touchend', function() {
+        setTimeout(() => {
+            this.classList.remove('touched');
+        }, 2000);
+    });
+}
+
+// Make toggleCaseStudy available globally
+window.toggleCaseStudy = toggleCaseStudy;
+
+// Initialize case study banner click handlers
+function initCaseStudyBanners() {
+    const banners = document.querySelectorAll('.case-study-banner');
+    console.log('Found banners:', banners.length);
+    
+    banners.forEach(banner => {
+        const caseId = banner.getAttribute('data-case-id');
+        if (caseId) {
+            banner.addEventListener('click', function() {
+                toggleCaseStudy(caseId);
+            });
+            console.log('Added click handler for:', caseId);
+        }
+    });
+}
+
+// Sparkles Effect for Hero Text
+function initSparklesEffect() {
+    const sparklesContainer = document.querySelector('.sparkles-background');
+    if (!sparklesContainer) return;
+    
+    const colors = ['orange', 'blue', 'white'];
+    const sizes = ['size-sm', 'size-md', 'size-lg'];
+    
+    function createSparkle() {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        
+        // Random properties
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const size = sizes[Math.floor(Math.random() * sizes.length)];
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        const duration = 3 + Math.random() * 2; // 3-5 seconds
+        const delay = Math.random() * 2; // 0-2 seconds delay
+        
+        sparkle.classList.add(color, size);
+        sparkle.style.left = x + '%';
+        sparkle.style.top = y + '%';
+        sparkle.style.animationDuration = duration + 's';
+        sparkle.style.animationDelay = delay + 's';
+        
+        sparklesContainer.appendChild(sparkle);
+        
+        // Remove sparkle after animation
+        setTimeout(() => {
+            if (sparkle.parentNode) {
+                sparkle.parentNode.removeChild(sparkle);
+            }
+        }, (duration + delay) * 1000);
+    }
+    
+    function generateSparkles() {
+        // Create 3-5 sparkles at once
+        const count = 3 + Math.floor(Math.random() * 3);
+        for (let i = 0; i < count; i++) {
+            createSparkle();
+        }
+    }
+    
+    // Generate sparkles every 800ms
+    setInterval(generateSparkles, 800);
+    
+    // Generate initial sparkles
+    generateSparkles();
+}
+
+// Hover Border Gradient Effect
+function initHoverBorderGradient() {
+    const buttons = document.querySelectorAll('.btn');
+    
+    buttons.forEach(button => {
+        // Add the gradient border class
+        button.classList.add('btn-gradient-border');
+        
+        let isHovered = false;
+        let currentDirection = 'top';
+        let intervalId = null;
+        
+        const directions = ['top', 'right', 'bottom', 'left'];
+        
+        function rotateGradient() {
+            const currentIndex = directions.indexOf(currentDirection);
+            const nextIndex = (currentIndex + 1) % directions.length;
+            currentDirection = directions[nextIndex];
+            
+            // Remove all gradient classes
+            directions.forEach(dir => button.classList.remove(`gradient-${dir}`));
+            
+            // Add current gradient class
+            button.classList.add(`gradient-${currentDirection}`);
+        }
+        
+        function startRotation() {
+            intervalId = setInterval(rotateGradient, 2000); // Rotate every 2 seconds for smoother motion
+        }
+        
+        function stopRotation() {
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+        }
+        
+        // Mouse enter - show highlight gradient but keep rotation
+        button.addEventListener('mouseenter', () => {
+            isHovered = true;
+            
+            // Remove all gradient classes
+            directions.forEach(dir => button.classList.remove(`gradient-${dir}`));
+            
+            // Add highlight gradient
+            button.classList.add('gradient-highlight');
+        });
+        
+        // Mouse leave - return to normal rotation
+        button.addEventListener('mouseleave', () => {
+            isHovered = false;
+            
+            // Remove highlight gradient
+            button.classList.remove('gradient-highlight');
+            
+            // Add current direction gradient back
+            button.classList.add(`gradient-${currentDirection}`);
+        });
+        
+        // Start initial rotation - always running
+        startRotation();
+    });
+}
+
+// Initialize all new features when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    initCreatorsCarousel();
+    initTextReveal();
+    initCaseStudyBanners();
+    initSparklesEffect();
+    initHoverBorderGradient();
+    
+    console.log('Case study toggles initialized');
+    console.log('Sparkles effect initialized');
+    console.log('Hover border gradient initialized');
+});
