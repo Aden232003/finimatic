@@ -16,8 +16,8 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      scriptSrc: ["'self'", "https://player.vimeo.com", "https://uenunwzw.formester.com"],
-      frameSrc: ["'self'", "https://player.vimeo.com", "https://uenunwzw.formester.com"],
+      scriptSrc: ["'self'", "https://player.vimeo.com", "https://uenunwzw.formester.com", "https://www.youtube.com"],
+      frameSrc: ["'self'", "https://player.vimeo.com", "https://uenunwzw.formester.com", "https://www.youtube.com", "https://www.youtube-nocookie.com"],
       imgSrc: ["'self'", "data:", "https:", "https://i.vimeocdn.com"],
       connectSrc: ["'self'", "https://player.vimeo.com", "https://uenunwzw.formester.com"]
     }
@@ -242,6 +242,11 @@ app.get('/api/news', (req, res) => {
   ];
 
   res.json(news);
+});
+
+// Careers redirect
+app.get('/careers', (req, res) => {
+  res.redirect(301, 'https://phantom-organ-1b1.notion.site/Welcome-To-Finimatic-21d875fcba5a809ab59beee193fb0f06');
 });
 
 // Serve main HTML file
